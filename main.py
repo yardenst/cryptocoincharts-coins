@@ -5,26 +5,22 @@ from datetime import datetime
 
 # some settings
 ALL = 999999999
-TRADE_VOLUME_PAIR_FIELD = 'volume_first'
-PRICE_PAIR_FIELD = 'price'
-NULL_COLUMN = 'X'
-ERROR_COLUMN = 'ERR'
-NO_INFO_COLUMN = 'N/A'
-coins_max = ALL
-#for filtering the coins list
-min_price = 0.001
-min_volume_btc = 0.001
-coins_filter = lambda _coin: (float(_coin.price_btc) > min_price and float(_coin.volume_btc) > min_volume_btc )
+TRADE_VOLUME_PAIR_FIELD = 'volume_first'  # the field of TRADE VOLUME in the response
+PRICE_PAIR_FIELD = 'price'  # the field of PRICE in the response
+NULL_COLUMN = 'X'  # what to write on cells of the same pair [usd_usd],[btc_btc]....
+ERROR_COLUMN = 'ERR'  # what to write when there is an error getting the data
+NO_INFO_COLUMN = 'N/A'  # what to write when there is no data
+coins_max = ALL  # how many coins to work on (after the filter, see below)
+min_price = 0.001  # will only filter on coins with price > than this
+min_volume_btc = 0.001  # will only filter on coins with volume > than this
+coins_filter = lambda _coin: (
+    float(_coin.price_btc) > min_price and float(_coin.volume_btc) > min_volume_btc)  # the filter func
 
 if __name__ == '__main__':
     api = API()
     api.API_PATH = 'http://api.cryptocoincharts.info/'
-
-    #######################################
-    # let's save all coins before we start
-    #######################################
     coins = filter(coins_filter, api.listcoins())[:coins_max]
-    print(len(coins))
+    print("working on %d" % len(coins))
 
     def write_coin_row(coin):
         print "extracting data for %s ..." % coin.id
